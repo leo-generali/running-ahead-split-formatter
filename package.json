@@ -1,0 +1,8 @@
+{
+  "name": "strava-split-formatter",
+  "version": "0.1.0",
+  "description": "Formats RunningAhead workout splits nicely",
+  "main": "index.js",
+  "author": "Leo Generali <leogen17@gmail.com>",
+  "license": "MIT"
+}
