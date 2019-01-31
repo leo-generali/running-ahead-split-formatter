@@ -1,4 +1,17 @@
-const URL =
-  'https://www.runningahead.com/logs/7af3f4c2115e4d1e82e02098902dee9a/workouts/7c09aa8a43744df5a78095dd669d0a35';
+require('dotenv').config();
 
-console.log(URL);
+const rp = require('request-promise');
+const cheerio = require('cheerio');
+
+const re = /\[{"type":"interval"(.*)\]},/g;
+
+console.log(process.env.URL);
+
+rp(process.env.URL).then(function(html) {
+  const $ = cheerio.load(html, { xmlMode: true });
+  const str = $('script:not([src])')[4].children[0].data;
+  const rawData = re.exec(str)[0].slice(0, -2);
+  const arrOfData = JSON.parse(rawData);
+  const workouts = arrOfData.filter((_, index) => index % 2 === 0);
+  console.log(workouts);
+});
