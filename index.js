@@ -16,10 +16,10 @@ const run = async () => {
   const answer = await askQuestion();
   const { workoutDistances } = answer;
   const intervals = new Interval(workoutDistances);
-
   getWorkouts().then((workoutIntervalData) => {
     const splits = new Split(workoutDistances, workoutIntervalData);
     createFile([intervals.output(), splits.output()].join('\n'));
+    complete();
   });
 };
 
@@ -48,8 +48,12 @@ const askQuestion = () => {
   return inquirer.prompt(questions);
 };
 
+const complete = () => {
+  console.log(chalk.green('Succesfully formatted your splits!'));
+};
+
 const createFile = (string) => {
-  fs.writeFile('workout.md', string, function(err) {
+  fs.writeFile('workout.txt', string, (err) => {
     if (err) return console.log(err);
   });
 };

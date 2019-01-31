@@ -1,5 +1,3 @@
-const isInterval = require('../helpers');
-
 class Interval {
   constructor(intervals) {
     this.intervals = intervals;
