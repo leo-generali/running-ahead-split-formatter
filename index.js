@@ -19,7 +19,7 @@ const run = async () => {
       workoutIntervalData,
       workoutDistances
     );
-    createFile([workoutString, splitsString].join('\n\n'));
+    createFile([workoutString, splitsString].join('\n'));
   });
 
   // const workoutString = workoutToString(workoutDistances);
@@ -64,10 +64,14 @@ const workoutArrayToString = (array) => {
 
 const intervalArrayToString = (intervalArr, splitsArr) => {
   let string = 'Splits:\n';
-  splitsArr.forEach((_, index) => {
-    if (!splitsArr[index].includes('R')) {
+  splitsArr.forEach((split, index) => {
+    if (!split.includes('R')) {
       const { duration } = intervalArr[index];
-      string += `${formatTime(duration)}\n`;
+      const fourHundredSplit = calculateFourHundredMeterSplit(
+        duration,
+        parseInt(split)
+      );
+      string += `${formatTime(duration)} (~${fourHundredSplit}/400m)\n`;
     }
   });
   return string;
@@ -75,12 +79,22 @@ const intervalArrayToString = (intervalArr, splitsArr) => {
 
 const formatTime = (time) => {
   const minutes = Math.floor((time % 3600) / 60);
-  const seconds = Math.floor(time % 60);
-  const remainder = time.toString().split('.')[1];
-  const formattedString = `${minutes}:${
-    seconds < 10 ? '0' : ''
-  }${seconds}.${remainder}`;
+  const rawSeconds = Math.floor(time % 60);
+  const seconds = rawSeconds < 10 ? `0${seconds}` : rawSeconds;
+
+  // Garmin removes extra zeros when it sends the info
+  // to RA. This adds it back in.
+  // ie .2 => .20
+  const rawRemainder = time.toString().split('.')[1];
+  const remainder = rawRemainder < 10 ? `${rawRemainder}0` : rawRemainder;
+
+  const formattedString = `${minutes}:${seconds}.${remainder}`;
   return formattedString;
+};
+
+const calculateFourHundredMeterSplit = (duration, split) => {
+  const ratio = 1600 / split;
+  return Math.floor((duration * ratio) / 4);
 };
 
 const createFile = (string) => {
